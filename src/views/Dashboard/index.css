@@ -29,10 +29,16 @@ body {
     max-height: 100%;
 }
 #leftTableid {
-    height: 200%;
-    width: 80%;
+    height: 180%;
+    width: 100%;
+    margin-right: 0px;
 }
-
+.row{
+    height: auto;
+}
+.col{
+    height: auto;
+}
 .rightTable {
     height: 100%;
     width: 50%;
