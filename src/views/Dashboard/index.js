@@ -18,6 +18,13 @@ import useStatsForPool from '../../hooks/useStatsForPool';
 import useBank from '../../hooks/useBank';
 import useFetchBoardroomAPR from '../../hooks/useFetchBoardroomAPR';
 import useTotalValueLocked from '../../hooks/useTotalValueLocked';
+import useStakedTokenPriceInDollars from '../../hooks/useStakedTokenPriceInDollars';
+import useEarnings from '../../hooks/useEarnings';
+import useEarningsOnBoardroom from '../../hooks/useEarningsOnBoardroom';
+import useTotalStakedOnBoardroom from '../../hooks/useTotalStakedOnBoardroom';
+import useStakedBalance from '../../hooks/useStakedBalance';
+import useShareStats from '../../hooks/usebShareStats';
+import useStakedBalanceOnBoardroom from '../../hooks/useStakedBalanceOnBoardroom';
 import bshares from '../../assets/img/bshares.png';
 import bomb_bitcoin from '../../assets/img/bomb-bitcoin-LP.png';
 import bbond from '../../assets/img/bbond-256.png';
@@ -75,15 +82,77 @@ const Dashboard = () => {
     const tBondPriceInBNB = useMemo(() => (tBondStats ? Number(tBondStats.tokenInFtm).toFixed(4) : null), [tBondStats]);
 
     useEffect(() => window.scrollTo(0, 0));
+
+    //first bank id
     const bankId = "BombBtcbLPBShareRewardPool";
     const bank = useBank(bankId);
+
+
     let statsOnPool = useStatsForPool(bank);
 
+
+    //second bank id
     const bankId_ = "BshareBnbLPBShareRewardPool";
     const bank_ = useBank(bankId_);
     let statsOnPool_ = useStatsForPool(bank_);
     const boardroomAPR = useFetchBoardroomAPR();
     const TVL_value = useTotalValueLocked();
+    const earnings = useEarningsOnBoardroom();
+    const tokenPriceInDollars = useMemo(
+        () => (bombStats ? Number(bombStats.priceInDollars).toFixed(2) : null),
+        [bombStats],
+      );
+    const earnedInDollars = (Number(tokenPriceInDollars) * Number(getDisplayBalance(earnings))).toFixed(2);
+    const totalStaked = useTotalStakedOnBoardroom();
+    const stakedBalance = useStakedBalanceOnBoardroom();
+    // const {bankId} = useParams();
+    // const bank = useBank(bankId);
+
+
+    //BOMB-BTCD
+    const bombStats_BOMB_BTCD = useBombStats();
+    const tShareStats_BOMB_BTCD = useShareStats();
+    const earnings_BOMB_BTCD = useEarnings(bank.contract, bank.earnTokenName, bank.poolId);
+    const tokenStats_BOMB_BTCD = bank.earnTokenName === 'BSHARE' ? tShareStats_BOMB_BTCD : bombStats_BOMB_BTCD;
+    const tokenPriceInDollars_BOMB_BTCD = useMemo(
+        () => (tokenStats_BOMB_BTCD ? Number(tokenStats_BOMB_BTCD.priceInDollars).toFixed(2) : null),
+        [tokenStats_BOMB_BTCD],
+      );
+    const earnedInDollars_BOMB_BTCD = (Number(tokenPriceInDollars_BOMB_BTCD) * Number(getDisplayBalance(earnings_BOMB_BTCD))).toFixed(2);
+
+    //YOUR STAKES
+    const stakedBalance_BOMB_BTCD_STAKES = useStakedBalanceOnBoardroom();
+    const stakedTokenPriceInDollars_BOMB_BTCD_STAKES = useStakedTokenPriceInDollars('BSHARE', bombFinance.BSHARE);
+    const tokenPriceInDollars_BOMB_BTCD_STAKE = useMemo(
+        () =>
+          stakedTokenPriceInDollars_BOMB_BTCD_STAKES
+            ? (Number(stakedTokenPriceInDollars_BOMB_BTCD_STAKES) * Number(getDisplayBalance(stakedBalance_BOMB_BTCD_STAKES))).toFixed(2).toString()
+            : null,
+        [stakedTokenPriceInDollars_BOMB_BTCD_STAKES, stakedBalance],
+      );
+
+
+    //BSHARE-BNB
+    const bombStats_BSHARE_BNB = useBombStats();
+    const tShareStats_BSHARE_BNB = useShareStats();
+    const earnings_BSHARE_BNB = useEarnings(bank_.contract, bank_.earnTokenName, bank_.poolId);
+    const tokenStats_BSHARE_BNB = bank_.earnTokenName === 'BSHARE' ? tShareStats_BSHARE_BNB : bombStats_BSHARE_BNB;
+    const tokenPriceInDollars_BSHARE_BNB = useMemo(
+        () => (tokenStats_BSHARE_BNB ? Number(tokenStats_BSHARE_BNB.priceInDollars).toFixed(2) : null),
+        [tokenStats_BSHARE_BNB],
+      );
+    const earnedInDollars_BSHARE_BNB = (Number(tokenPriceInDollars_BSHARE_BNB) * Number(getDisplayBalance(earnings_BSHARE_BNB))).toFixed(2);
+
+    //YOUR STAKES
+    const stakedBalance_BSHARE_BNB_STAKES = useStakedBalanceOnBoardroom();
+    const stakedTokenPriceInDollars_BSHARE_BNB_STAKES = useStakedTokenPriceInDollars('BSHARE', bombFinance.BSHARE);
+    const tokenPriceInDollars_BSHARE_BNB_STAKE = useMemo(
+        () =>
+          stakedTokenPriceInDollars_BSHARE_BNB_STAKES
+            ? (Number(stakedTokenPriceInDollars_BSHARE_BNB_STAKES) * Number(getDisplayBalance(stakedBalance_BSHARE_BNB_STAKES))).toFixed(2).toString()
+            : null,
+        [stakedTokenPriceInDollars_BSHARE_BNB_STAKES, stakedBalance],
+      );
     return (
        <Page>
         <div className="App">
@@ -225,7 +294,7 @@ const Dashboard = () => {
 
                             </div>
                             <hr />
-                            <div className="Total-soaked">Total Staked: 7232</div>
+                            <div className="Total-soaked">Total Staked: {getDisplayBalance(totalStaked)}</div>
 
                             <div className="sec2final">
                                 <div className="grid">
@@ -235,15 +304,15 @@ const Dashboard = () => {
                                                 <th scope="col"></th>
                                                 <th scope="col">Daily Returns</th>
                                                 <th scope="col">Your stake</th>
-                                                <th scope="col">Returns</th>
+                                                <th scope="col">Earned</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr>
                                                 <td></td>
                                                 <td>{Math.round(boardroomAPR.toFixed(2) / 365)}%</td>
-                                                <td>6.0000 ≈ $1171.62</td>
-                                                <td> 1660.4413 ≈ $298.88</td>
+                                                <td>{getDisplayBalance(stakedBalance)} {`≈ $${tokenPriceInDollars}`}</td>
+                                                <td>{getDisplayBalance(earnings)} {`≈ $${earnedInDollars}`}</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -308,8 +377,8 @@ const Dashboard = () => {
                                     <tr>
                                         <td></td>
                                         <td>{bank.closedForStaking ? '0.00' : statsOnPool?.dailyAPR}%</td>
-                                        <td>6.0000 ≈ $1171.62</td>
-                                        <td> 1660.4413 ≈ $298.88</td>
+                                        <td>{getDisplayBalance(stakedBalance_BOMB_BTCD_STAKES)} {`≈ $${tokenPriceInDollars_BOMB_BTCD_STAKE}`}</td>
+                                        <td> {getDisplayBalance(earnings_BOMB_BTCD)} {`≈ $${earnedInDollars_BOMB_BTCD}`}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -347,8 +416,8 @@ const Dashboard = () => {
                                     <tr>
                                         <td></td>
                                         <td>{bank_.closedForStaking ? '0.00' : statsOnPool_?.dailyAPR}%</td>
-                                        <td>6.0000 ≈ $1171.62</td>
-                                        <td> 1660.4413 ≈ $298.88</td>
+                                        <td>{getDisplayBalance(stakedBalance_BSHARE_BNB_STAKES)} {`≈ $${tokenPriceInDollars_BSHARE_BNB_STAKE}`}</td>
+                                        <td> {getDisplayBalance(earnings_BSHARE_BNB)} {`≈ $${earnedInDollars_BSHARE_BNB}`}</td>
                                     </tr>
                                 </tbody>
                             </table>
