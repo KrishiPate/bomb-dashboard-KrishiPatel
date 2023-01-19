@@ -25,6 +25,8 @@ import useTotalStakedOnBoardroom from '../../hooks/useTotalStakedOnBoardroom';
 import useStakedBalance from '../../hooks/useStakedBalance';
 import useShareStats from '../../hooks/usebShareStats';
 import useStakedBalanceOnBoardroom from '../../hooks/useStakedBalanceOnBoardroom';
+import useBondsPurchasable from '../../hooks/useBondsPurchasable';
+
 import bshares from '../../assets/img/bshares.png';
 import bomb_bitcoin from '../../assets/img/bomb-bitcoin-LP.png';
 import bbond from '../../assets/img/bbond-256.png';
@@ -61,7 +63,7 @@ const Dashboard = () => {
 
     const bondStat = useBondStats();
     const bombFinance = useBombFinance();
-    const bondBalance = useTokenBalance(bombFinance?.BBOND);
+    // const bondBalance = useTokenBalance(bombFinance?.BBOND);
     const bombPriceInDollars = useMemo(
         () => (bombStats ? Number(bombStats.priceInDollars).toFixed(2) : null),
         [bombStats],
@@ -153,6 +155,7 @@ const Dashboard = () => {
             : null,
         [stakedTokenPriceInDollars_BSHARE_BNB_STAKES, stakedBalance],
       );
+    const bondsPurchasable = useBondsPurchasable();
     return (
        <Page>
         <div className="App">
@@ -455,7 +458,7 @@ const Dashboard = () => {
                                 <div className="s4-content-left-left-bottom-img">
                                     <img src={bbond} className="s4-bbond-img" />
                                 </div>
-                                <div className="s4-content-left-left-bottom-value">{getDisplayBalance(bondBalance)}</div>
+                                <div className="s4-content-left-left-bottom-value">{getDisplayBalance(bondsPurchasable, 18, 4)}</div>
                             </div>
                         </div>
                     </div>
