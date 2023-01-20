@@ -12,6 +12,7 @@ import { roundAndFormatNumber } from '../../0x';
 import usebShareStats from '../../hooks/usebShareStats';
 import HomeImage from '../../assets/img/background.jpg';
 import useBondStats from '../../hooks/useBondStats';
+import useCashPriceInEstimatedTWAP from '../../hooks/useCashPriceInEstimatedTWAP';
 import { getDisplayBalance } from '../../utils/formatBalance';
 import useTokenBalance from '../../hooks/useTokenBalance';
 import useBombFinance from '../../hooks/useBombFinance';
@@ -28,11 +29,22 @@ import useShareStats from '../../hooks/usebShareStats';
 import useStakedBalanceOnBoardroom from '../../hooks/useStakedBalanceOnBoardroom';
 import useBondsPurchasable from '../../hooks/useBondsPurchasable';
 
+// import useBombFinance from '../../hooks/useBombFinance';
+import {useCallback} from "react";
+// import { getDisplayBalance } from '../../utils/formatBalance';
+// import useBondsPurchasable from '../../hooks/useBondsPurchasable';
+// import useBondStats from '../../hooks/useBondStats';
+
+import {useTransactionAdder} from '../../state/transactions/hooks';
+import useModal from '../../hooks/useModal';
+import ExchangeModal from './ExchangeModal';
+// import useTokenBalance from '../../hooks/useTokenBalance';
+
 import WithdrawModal from './WithdrawModal';
 import DepositModal from './DepositModal';
 import useStakeToBoardroom from '../../hooks/useStakeToBoardroom';
 import useWithdrawFromBoardroom from '../../hooks/useWithdrawFromBoardroom';
-import useModal from '../../hooks/useModal';
+// import useModal from '../../hooks/useModal';
 // import { AddIcon, RemoveIcon } from '../../components/icons';
 // import IconButton from '../../components/IconButton';
 // import styled from 'styled-components';
@@ -73,6 +85,8 @@ const Dashboard = () => {
     const tBondStats = useBondStats();
     const tBondTotalSupply = useMemo(() => (tBondStats ? String(tBondStats.totalSupply) : null), [tBondStats]);
     const bombCirculatingSupply = useMemo(() => (bombStats ? String(bombStats.circulatingSupply) : null), [bombStats]);
+    const cashStat = useCashPriceInEstimatedTWAP();
+    const scalingFactor = useMemo(() => (cashStat ? Number(cashStat.priceInDollars).toFixed(4) : null), [cashStat]);
     const bShareCirculatingSupply = useMemo(
         () => (bShareStats ? String(bShareStats.circulatingSupply) : null),
         [bShareStats],
@@ -214,6 +228,59 @@ const Dashboard = () => {
             tokenName={'BShare'}
         />,
     );
+    // const bondStat = useBondStats();
+    // const bombFinance = useBombFinance();
+    // const bondsPurchasable = useBondsPurchasable();
+    const balance = useTokenBalance(bombFinance.BOMB);
+   
+    const addTransaction = useTransactionAdder();
+    const isBondPurchasable = useMemo(() => Number(bondStat?.tokenInFtm) < 1.01, [bondStat]);
+    const handleBuyBonds = useCallback(
+        async (amount) => {
+          const tx = await bombFinance.buyBonds(amount);
+          addTransaction(tx, {
+            summary: `Buy ${Number(amount).toFixed(2)} BBOND with ${amount} BOMB`,
+          });
+        },
+        [bombFinance, addTransaction],
+      );
+
+    const [onPresent, onDismiss] = useModal(
+        <ExchangeModal
+          title={"Purchase"}
+          description={!isBondPurchasable
+            ? 'BOMB is over peg'
+            : getDisplayBalance(bondsPurchasable, 18, 4) + ' BBOND available for purchase'}
+          max={balance}
+          onConfirm={(value) => {
+            handleBuyBonds(value);
+            onDismiss();
+          }}
+          action={"Purchase"}
+          tokenName={"BOMB"}
+        />,
+      );
+      const handleRedeemBonds = useCallback(
+        async (amount) => {
+          const tx = await bombFinance.redeemBonds(amount);
+          addTransaction(tx, {summary: `Redeem ${amount} BBOND`});
+        },
+        [bombFinance, addTransaction],
+      );
+      const balance2 = useTokenBalance(bombFinance.BBOND);
+      const [onPresent2, onDismiss2] = useModal(
+        <ExchangeModal
+          title={"Redeem"}
+          description={`${getDisplayBalance(bondBalance)} BBOND Available in wallet`}
+          max={balance2}
+          onConfirm={(value) => {
+            handleRedeemBonds(value);
+            onDismiss2();
+          }}
+          action={"Redeem"}
+          tokenName={"BBOND"}
+        />,
+      );
 
     //secction 3 buttons
     const { onReward_sec3_div1 } = useHarvest(bank);
@@ -317,9 +384,9 @@ const Dashboard = () => {
 
                                 </div>
                                 <hr />
-                                <div className="key2">Live TWAP: 1.17</div>
+                                <div className="key2">Live TWAP: {scalingFactor}</div>
                                 <div className="key2">TVL: <CountUp end={TVL_value} separator="," prefix="$" /></div>
-                                <div className="key2">Last Epoch TWAP: 1.22</div>
+                                <div className="key2">Last Epoch TWAP: {scalingFactor}</div>
                             </div>
                         </div>
 
@@ -451,7 +518,15 @@ const Dashboard = () => {
                             <div className="bombFarms-disc">Stake your LP tokens in our farms to start earning $BSHARE</div>
                         </div>
                         <div className="s3-div1-right">
-                            <div className="claim-all">Claim all</div>
+                            <div className="claim-all">
+                            <Button
+                                        onClick={onReward}
+                                        disabled={earnings.eq(0)}
+                                        className={earnings.eq(0) ? 'shinyButtonDisabled' : 'shinyButton'}
+                                    >
+                                        Claim all
+                                    </Button>
+                            </div>
                         </div>
                     </div>
 
@@ -637,14 +712,18 @@ const Dashboard = () => {
                                     <div className="purchase-BBond-content-content">Bomb is over peg</div>
                                 </div>
                                 <div className="purchase-BBond-button">
-                                    <Button className="shinyButton">Purchase</Button>
+                                    <Button className="shinyButton" 
+                                    onClick={onPresent}>
+                                        Purchase</Button>
                                     </div>
                             </div>
                             <hr />
                             <div className="Redeem-Bomb">
                                 <div className="purchase-BBond-content-content2">Redeem Bomb</div>
                                 <div className="purchase-BBond-button">
-                                <Button className="shinyButton">Redeem</Button>
+                                <Button className="shinyButton"
+                                onClick={onPresent2}>
+                                    Redeem</Button>
                                 </div>
                             </div>
                         </div>
