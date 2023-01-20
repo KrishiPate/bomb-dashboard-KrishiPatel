@@ -39,7 +39,7 @@ import useHarvestFromBoardroom from '../../hooks/useHarvestFromBoardroom';
 import useWithdrawCheck from '../../hooks/boardroom/useWithdrawCheck';
 import useClaimRewardCheck from '../../hooks/boardroom/useClaimRewardCheck';
 import useRedeemOnBoardroom from '../../hooks/useRedeemOnBoardroom';
-import useApprove_,{ApprovalState} from '../../hooks/useApprove';
+import useApprove_, { ApprovalState } from '../../hooks/useApprove';
 
 
 import bshares from '../../assets/img/bshares.png';
@@ -50,6 +50,10 @@ import bomb_img from '../../assets/img/bomb.png';
 import meta_fox from '../../assets/img/metamask-fox.svg';
 import { Typography, Button } from '@material-ui/core';
 import Page from "../../components/Page";
+
+import useHarvest from '../../hooks/useHarvest';
+import useRedeem from '../../hooks/useRedeem';
+
 
 const BackgroundImage = createGlobalStyle`
   body {
@@ -210,6 +214,12 @@ const Dashboard = () => {
         />,
     );
 
+    //secction 3 buttons
+    const { onReward_sec3_div1 } = useHarvest(bank);
+    const [approveStatus_sec3_div1, approve_sec3_div1] = useApprove_(bank.depositToken, bank.address);
+    const { onRedeem_sec3_div1 } = useRedeem(bank);
+    const [approveStatus_sec3_div2, approve_sec3_div2] = useApprove_(bank_.depositToken, bank_.address);
+
     return (
         <Page>
             <div className="App">
@@ -344,7 +354,7 @@ const Dashboard = () => {
                                         <div className="Boardroom">Boardroom</div>
                                         <div className="Boardroom-below">
                                             <div className="Boardroom-below-disc">Stake BSHARE and earn BOMB every epoch</div>
-                                            <div className="TVL">TVL: $1,008,430</div>
+                                            <div className="TVL">TVL: <CountUp end={TVL_value} separator="," prefix="$" /></div>
                                         </div>
 
                                     </div>
@@ -385,7 +395,7 @@ const Dashboard = () => {
                                                 >
                                                     Deposit
                                                 </Button>
-                                                </div>
+                                            </div>
                                             <div className="withdraw">
                                                 <Button
                                                     disabled={stakedBalance.eq(0) || (!canWithdraw && !canClaimReward)}
@@ -471,10 +481,44 @@ const Dashboard = () => {
                             </div>
                             <div className="s3-div2-content-buttons">
                                 <div className="sec3-deposit">
-                                    <div className="box-div">Deposit</div>
+                                    <div className="box-div">
+                                        <Button
+                                            disabled={
+                                                bank.closedForStaking ||
+                                                approveStatus_sec3_div1 === ApprovalState.PENDING ||
+                                                approveStatus_sec3_div1 === ApprovalState.UNKNOWN
+                                            }
+                                            onClick={approve_sec3_div1}
+                                            className={
+                                                bank.closedForStaking ||
+                                                    approveStatus_sec3_div1 === ApprovalState.PENDING ||
+                                                    approveStatus_sec3_div1 === ApprovalState.UNKNOWN
+                                                    ? 'shinyButtonDisabled'
+                                                    : 'shinyButton'
+                                            }
+                                        >
+                                            Deposit
+                                        </Button>
+                                    </div>
                                 </div>
-                                <div className="sec3-withdraw">Withdraw</div>
-                                <div className="sec3-rewards">Rewards</div>
+                                <div className="sec3-withdraw">
+                                    <Button
+                                        className="shinyButtonDisabled"
+                                        onClick={onRedeem}
+                                        disabled={earnings.eq(0)}
+                                        >
+                                        Withdraw
+                                    </Button>
+                                </div>
+                                <div className="sec3-rewards">
+                                    <Button
+                                        onClick={onReward}
+                                        disabled={earnings.eq(0)}
+                                        className={earnings.eq(0) ? 'shinyButtonDisabled' : 'shinyButton'}
+                                    >
+                                        Claim Rewards
+                                    </Button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -509,9 +553,44 @@ const Dashboard = () => {
                                 </table>
                             </div>
                             <div className="s3-div2-content-buttons">
-                                <div className="sec3-deposit">Deposit</div>
-                                <div className="sec3-withdraw">Withdraw</div>
-                                <div className="sec3-rewards">Rewards</div>
+                                <div className="sec3-deposit">
+                                    <Button
+                                        disabled={
+                                            bank_.closedForStaking ||
+                                            approveStatus_sec3_div2 === ApprovalState.PENDING ||
+                                            approveStatus_sec3_div2 === ApprovalState.UNKNOWN
+                                        }
+                                        onClick={approve_sec3_div2}
+                                        className={
+                                            bank_.closedForStaking ||
+                                                approveStatus_sec3_div2 === ApprovalState.PENDING ||
+                                                approveStatus_sec3_div2 === ApprovalState.UNKNOWN
+                                                ? 'shinyButtonDisabled'
+                                                : 'shinyButton'
+                                        }
+                                    >
+                                        Deposit
+                                    </Button>
+                                </div>
+                                <div className="sec3-withdraw">
+                                    <Button
+                                        className="shinyButtonDisabled"
+                                        onClick={onRedeem}
+                                        disabled={earnings.eq(0)}
+                                        >
+                                            
+                                        Withdraw
+                                    </Button>
+                                </div>
+                                <div className="sec3-rewards">
+                                    <Button
+                                        onClick={onReward}
+                                        disabled={earnings.eq(0)}
+                                        className={earnings.eq(0) ? 'shinyButtonDisabled' : 'shinyButton'}
+                                    >
+                                        Claim Rewards
+                                    </Button>
+                                </div>
                             </div>
                         </div>
                     </div>
