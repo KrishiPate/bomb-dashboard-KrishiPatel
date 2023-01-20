@@ -332,7 +332,7 @@ const Dashboard = () => {
                     <div className="section-2-1">
 
                         <div className="section-2-header">
-                            <a href="https://docs.bomb.money/strategies/general-quick-roi-strategy"><h4>__Read investment strategy__</h4></a>
+                            <a href="https://docs.bomb.money/strategies/general-quick-roi-strategy"><h4>Read investment strategy</h4></a>
                         </div>
 
                         <div className="sec2-1-2">
