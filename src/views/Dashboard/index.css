@@ -4,7 +4,6 @@ body {
     color: #fff;
 }
 
-
 .section-1 {
     height: 289px;
     margin: 2rem 4rem;
@@ -220,8 +219,8 @@ body {
 .deposit {
     width: 50%;
     text-align: center;
-    border: 1px solid #ffffff;
-    backdrop-filter: blur(5px);
+    /* border: 1px solid #ffffff;
+    backdrop-filter: blur(5px); */
     /* Note: backdrop-filter has minimal browser support */
 
     border-radius: 10px;
@@ -231,8 +230,8 @@ body {
     width: 50%;
     text-align: center;
     margin-left: 15px;
-    border: 1px solid #ffffff;
-    backdrop-filter: blur(5px);
+    /* border: 1px solid #ffffff; */
+    /* backdrop-filter: blur(5px); */
     border-radius: 10px;
 }
 
@@ -248,10 +247,10 @@ body {
 }
 
 .rewards {
-    margin-top: 30px;
+    margin-top: 15px;
     text-align: center;
-    border: 1px solid #ffffff;
-    backdrop-filter: blur(5px);
+    /* border: 1px solid #ffffff; */
+    /* backdrop-filter: blur(5px); */
     border-radius: 10px;
 }
 

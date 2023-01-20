@@ -1,27 +1,26 @@
 import React, {useCallback, useMemo, useState} from 'react';
 
 import {Button} from '@material-ui/core';
-// import Button from '../../../components/Button'
-import Modal, {ModalProps} from '../../../components/Modal';
-import ModalActions from '../../../components/ModalActions';
-import ModalTitle from '../../../components/ModalTitle';
-import TokenInput from '../../../components/TokenInput';
+import Modal, {ModalProps} from '../../components/Modal';
+import ModalActions from '../../components/ModalActions';
+import ModalTitle from '../../components/ModalTitle';
+import TokenInput from '../../components/TokenInput';
 
-import {getFullDisplayBalance} from '../../../utils/formatBalance';
+import {getFullDisplayBalance} from '../../utils/formatBalance';
 import {BigNumber} from 'ethers';
 
-interface DepositModalProps extends ModalProps {
+interface WithdrawModalProps extends ModalProps {
   max: BigNumber;
   onConfirm: (amount: string) => void;
   tokenName?: string;
 }
 
-const DepositModal: React.FC<DepositModalProps> = ({max, onConfirm, onDismiss, tokenName = ''}) => {
+const WithdrawModal: React.FC<WithdrawModalProps> = ({onConfirm, onDismiss, max, tokenName = ''}) => {
   const [val, setVal] = useState('');
 
   const fullBalance = useMemo(() => {
-    return getFullDisplayBalance(max, tokenName === 'USDC' ? 6 : 18);
-  }, [max, tokenName]);
+    return getFullDisplayBalance(max);
+  }, [max]);
 
   const handleChange = useCallback(
     (e: React.FormEvent<HTMLInputElement>) => {
@@ -36,11 +35,11 @@ const DepositModal: React.FC<DepositModalProps> = ({max, onConfirm, onDismiss, t
 
   return (
     <Modal>
-      <ModalTitle text={`Deposit ${tokenName}`} />
+      <ModalTitle text={`Withdraw ${tokenName}`} />
       <TokenInput
-        value={val}
         onSelectMax={handleSelectMax}
         onChange={handleChange}
+        value={val}
         max={fullBalance}
         symbol={tokenName}
       />
@@ -48,9 +47,11 @@ const DepositModal: React.FC<DepositModalProps> = ({max, onConfirm, onDismiss, t
         <Button color="primary" variant="contained" onClick={() => onConfirm(val)}>
           Confirm
         </Button>
+        {/* <Button text="Cancel" variant="secondary" onClick={onDismiss} />
+        <Button text="Confirm" onClick={() => onConfirm(val)} /> */}
       </ModalActions>
     </Modal>
   );
 };
 
-export default DepositModal;
+export default WithdrawModal;

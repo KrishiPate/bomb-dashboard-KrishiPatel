@@ -19,8 +19,8 @@ import useWithdrawCheck from '../../../hooks/boardroom/useWithdrawCheck';
 
 import {getDisplayBalance} from '../../../utils/formatBalance';
 
-import DepositModal from './DepositModal';
-import WithdrawModal from './WithdrawModal';
+import DepositModal from '../../Dashboard/DepositModal';
+import WithdrawModal from '../../Dashboard/WithdrawModal';
 import useBombFinance from '../../../hooks/useBombFinance';
 import ProgressCountdown from './ProgressCountdown';
 import useStakedBalanceOnBoardroom from '../../../hooks/useStakedBalanceOnBoardroom';
