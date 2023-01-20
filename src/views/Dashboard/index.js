@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect, useApprove } from "react";
+import {Link} from "react-router-dom";
 import useCurrentEpoch from '../../hooks/useCurrentEpoch';
 import ProgressCountdown from './ProgressCountdown';
 import { createGlobalStyle } from 'styled-components';
@@ -331,15 +332,20 @@ const Dashboard = () => {
                     <div className="section-2-1">
 
                         <div className="section-2-header">
-                            <h4>Read investment strategy</h4>
+                            <a href="https://docs.bomb.money/strategies/general-quick-roi-strategy"><h4>__Read investment strategy__</h4></a>
                         </div>
 
                         <div className="sec2-1-2">
                             <div className="sub-sub-div-1">
+                                <Link to='../Farm'>
                                 <div className="investNow">Invest now</div>
+                                </Link>
                                 <div className="chats">
-                                    <div className="discord">Chat on discord</div>
-                                    <div className="docs">read docs</div>
+                                    <div className="discord">
+                                        <a href="http://discord.bomb.money/">Chat on discord</a></div>
+                                    <div className="docs">
+                                    <a href="https://docs.bomb.money/welcome-start-here/readme">read docs</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -630,12 +636,16 @@ const Dashboard = () => {
                                     <div className="purchase-BBond-content-content">Purchase BBond</div>
                                     <div className="purchase-BBond-content-content">Bomb is over peg</div>
                                 </div>
-                                <div className="purchase-BBond-button">Purchase</div>
+                                <div className="purchase-BBond-button">
+                                    <Button className="shinyButton">Purchase</Button>
+                                    </div>
                             </div>
                             <hr />
                             <div className="Redeem-Bomb">
-                                <div className="purchase-BBond-content-content">Redeem Bomb</div>
-                                <div className="purchase-BBond-button">Redeem</div>
+                                <div className="purchase-BBond-content-content2">Redeem Bomb</div>
+                                <div className="purchase-BBond-button">
+                                <Button className="shinyButton">Redeem</Button>
+                                </div>
                             </div>
                         </div>
                     </div>
