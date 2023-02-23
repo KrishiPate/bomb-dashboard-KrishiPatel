@@ -1,3 +1,5 @@
+# The link to the website can be found here: https://bomb-dashboard-krishi-patel-iitj.netlify.app/
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
